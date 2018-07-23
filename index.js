@@ -4,6 +4,8 @@ function allowDrop(ev) {
 
 function drag(ev) {
   ev.dataTransfer.setData("text", ev.target.id);
+  $('#' + ev.target.id).hide();
+  getValidMoves(ev.target.id);
 }
 
 function drop(ev) {
@@ -15,7 +17,12 @@ function drop(ev) {
     captured = ev.target;
     ev.target.remove();
   }
+  $('#' + data).show();
   location.appendChild(document.getElementById(data));
+}
+
+function getValidMoves(piece) {
+  return;
 }
 
 function startingLayout(opponentColor) {
@@ -184,7 +191,6 @@ function startingLayout(opponentColor) {
     }
     $('#board').append(newElement);
   }
-  //$('#b1').append('<img id="topPawn" src="images/' + opponentColor + 'Pawn.png" draggable="true" ondragstart="drag(event)" />');
 }
 
 $(function() {
