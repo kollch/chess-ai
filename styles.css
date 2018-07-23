@@ -1,0 +1,32 @@
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+#board {
+  width: 90vmin;
+}
+
+.boardSquare {
+  /* Width calculated by board width divided by 8 minus (border size times 16).
+   * Height set to same as width since each cell should be a square. */
+  width: calc((90vmin - 16px) / 8);
+  height: calc((90vmin - 16px) / 8);
+  float: left;
+  border: 1px solid black;
+}
+
+.even {
+  background: #ddd;
+}
+
+img {
+  position: fixed;
+  /* Width and height set to same as each cell (.board_square). */
+  width: calc((90vmin - 16px) / 8);
+  height: calc((90vmin - 16px) / 8);
+}
