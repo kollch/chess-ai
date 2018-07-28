@@ -4,7 +4,8 @@ function allowDrop(ev) {
 
 function drag(ev) {
   ev.dataTransfer.setData("text", ev.target.id);
-  $('#' + ev.target.id).hide();
+  ev.dropEffect = "move";
+  //$('#' + ev.target.id).hide();
   getValidMoves(ev.target.id);
 }
 
@@ -17,7 +18,7 @@ function drop(ev) {
     captured = ev.target;
     ev.target.remove();
   }
-  $('#' + data).show();
+  //$('#' + data).show();
   location.appendChild(document.getElementById(data));
 }
 

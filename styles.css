@@ -3,6 +3,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: row;
   height: 100vh;
   width: 100vw;
 }
@@ -20,6 +21,17 @@ body {
   border: 1px solid black;
 }
 
+#trash {
+  margin-left: 5vmin;
+  height: 90vmin;
+  width: calc(90vmin / 2);
+  border: 1px solid black;
+}
+
+#trash > img {
+  position: relative;
+}
+
 .even {
   background: #ddd;
 }
@@ -29,4 +41,64 @@ img {
   /* Width and height set to same as each cell (.board_square). */
   width: calc((90vmin - 16px) / 8);
   height: calc((90vmin - 16px) / 8);
+}
+
+/* When width smaller than height. */
+@media screen and (orientation: portrait) {
+  body {
+    flex-direction: column;
+  }
+
+  #trash {
+    margin-left: 0;
+    margin-top: 5vmin;
+    width: 90vmin;
+    height: calc(90vmin / 2);
+  }
+}
+
+/* When width smaller than height but close enough to a square that not
+ * everything fits. */
+@media screen and (orientation: portrait) and (min-aspect-ratio: 2/3) {
+  #board {
+    width: 60vh;
+  }
+
+  #trash {
+    width: 60vh;
+    height: calc(60vh / 2);
+  }
+
+  .boardSquare {
+    width: calc((60vh - 16px) / 8);
+    height: calc((60vh - 16px) / 8);
+  }
+
+  img {
+    width: calc((60vh - 16px) / 8);
+    height: calc((60vh - 16px) / 8);
+  }
+}
+
+/* When width larger than height but close enough to a square that not
+ * everything fits. */
+@media screen and (orientation: landscape) and (max-aspect-ratio: 3/2) {
+  #board {
+    width: 60vw;
+  }
+
+  #trash {
+    width: calc(60vw / 2);
+    height: 60vw;
+  }
+
+  .boardSquare {
+    width: calc((60vw - 16px) / 8);
+    height: calc((60vw - 16px) / 8);
+  }
+
+  img {
+    width: calc((60vw - 16px) / 8);
+    height: calc((60vw - 16px) / 8);
+  }
 }
