@@ -21,26 +21,45 @@ body {
   border: 1px solid black;
 }
 
-#trash {
-  margin-left: 5vmin;
-  height: 90vmin;
-  width: calc(90vmin / 2);
-  border: 1px solid black;
+#captured {
+  display: flex;
+  flex-direction: column;
 }
 
-#trash > img {
-  position: relative;
+#capturedOwn, #capturedOpponent {
+  display: flex;
+  margin-left: 5vmin;
+  /*height: calc(45vmin - 1px);*/
+  height: 45vmin;
+  width: calc(90vmin / 2);
+  /*border: 1px solid black;*/
+  align-content: flex-start;
+  flex-direction: row;
+}
+
+#capturedOwn {
+  /*border-bottom: 0;*/
+  flex-wrap: wrap;
+}
+
+#capturedOpponent {
+  /*border-top: 0;*/
+  flex-wrap: wrap-reverse;
 }
 
 .even {
   background: #ddd;
 }
 
+#capturedOwn > img, #capturedOpponent > img {
+  cursor: unset;
+}
+
 img {
-  position: fixed;
   /* Width and height set to same as each cell (.board_square). */
   width: calc((90vmin - 16px) / 8);
   height: calc((90vmin - 16px) / 8);
+  cursor: move;
 }
 
 /* When width smaller than height. */
@@ -49,11 +68,27 @@ img {
     flex-direction: column;
   }
 
-  #trash {
+  #captured {
+    flex-direction: row;
+  }
+
+  #capturedOwn, #capturedOpponent {
     margin-left: 0;
     margin-top: 5vmin;
-    width: 90vmin;
+    /*width: calc(45vmin - 1px); */
+    width: 45vmin;
     height: calc(90vmin / 2);
+    flex-direction: column;
+  }
+
+  #capturedOwn {
+    /*border-bottom: 1px solid black;
+    border-right: 0;*/
+  }
+
+  #capturedOpponent {
+    /*border-top: 1px solid black;
+    border-left: 0;*/
   }
 }
 
@@ -64,8 +99,13 @@ img {
     width: 60vh;
   }
 
-  #trash {
-    width: 60vh;
+  #captured {
+    flex-direction: row;
+  }
+
+  #capturedOwn, #capturedOpponent {
+    /*width: calc(30vh - 1px);*/
+    width: 30vh;
     height: calc(60vh / 2);
   }
 
@@ -87,9 +127,10 @@ img {
     width: 60vw;
   }
 
-  #trash {
+  #capturedOwn, #capturedOpponent {
     width: calc(60vw / 2);
-    height: 60vw;
+    /*height: calc(30vw - 1px);*/
+    height: 30vw;
   }
 
   .boardSquare {
