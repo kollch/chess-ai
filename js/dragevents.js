@@ -8,6 +8,7 @@ $(() => {
     if (elmnt.tagName !== "IMG") {
       return;
     }
+    availMoves(elmnt.id);
 
     document.onmousemove = e => {
       e.preventDefault();
