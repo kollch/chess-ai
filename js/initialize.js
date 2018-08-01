@@ -1,3 +1,9 @@
+var wCastleLeft = true;
+var bCastleLeft = true;
+var wCastleRight = true;
+var bCastleRight = true;
+var wEnPassant = [false, false, false, false, false, false, false, false];
+var bEnPassant = [false, false, false, false, false, false, false, false];
 $(() => {
   $('#board').empty();
   let locations = ["a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"];

@@ -51,6 +51,14 @@ body {
   background: #ddd;
 }
 
+.acceptable {
+  background: #ffff98;
+}
+
+.acceptable.even {
+  background: #eaea84;
+}
+
 #capturedOwn > img, #capturedOpponent > img {
   cursor: unset;
 }

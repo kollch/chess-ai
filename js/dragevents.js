@@ -26,7 +26,7 @@ $(() => {
       let cell = document.elementFromPoint(mouseX, mouseY);
       if (cell.classList.contains("acceptable")) {
         cell.appendChild(elmnt);
-      } else if (cell.tagName === "IMG" && (cell.parentNode.classList.contains("acceptable") || true)) {
+      } else if (cell.tagName === "IMG" && (cell.parentNode.classList.contains("acceptable"))) {
         cell.parentNode.appendChild(elmnt);
         if (cell.classList.contains("black")) {
           document.getElementById("capturedOpponent").appendChild(cell);
@@ -40,6 +40,7 @@ $(() => {
       elmnt.style.left = "unset";
       document.onmousemove = null;
       document.onmouseup = null;
+      $("#board > div").removeClass("acceptable");
     };
   };
 

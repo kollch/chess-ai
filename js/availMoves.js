@@ -9,8 +9,12 @@ function availMoves(pieceId) {
   console.log("The location of the piece is " + location);
   let allowedList = [];
   function pushItem(i) {
-    let newLocation = $("#board").get(i);
-    if (newLocation.children().eq(0).id.substring(0, 1) === color) {
+    let newLocation = $("#board > div").get(i);
+    if (newLocation.firstChild) {
+      if (newLocation.firstChild.id.substring(0, 1) === color) {
+        return false;
+      }
+      allowedList.push(newLocation);
       return false;
     }
     allowedList.push(newLocation);
@@ -178,24 +182,31 @@ function availMoves(pieceId) {
       function canEnPassant(pawn) {
         return false;
       }
-      pushItem(location - 8);
+      let newLocation = $("#board > div").get(location - 8);
+      if (!newLocation.firstChild) {
+        pushItem(location - 8);
+      }
       if (location > 47 && location < 56) {
         pushItem(location - 16);
       }
       if (location % 8 !== 0) {
-        let newLocation = $("#board").get(location - 9);
-        if (newLocation.children().eq(0).id.substring(0, 1) === opponentColor
-          || canEnPassant($("#board").get(location - 1).children().eq(0))) {
+        let newLocation = $("#board > div").get(location - 9);
+        if (newLocation.firstChild && newLocation.firstChild.id.substring(0, 1) === opponentColor
+          || canEnPassant($("#board > div").get(location - 1))) {
           allowedList.push(newLocation);
         }
       }
       if (location % 8 !== 7) {
-        let newLocation = $("#board").get(location - 7);
-        if (newLocation.children().eq(0).id.substring(0, 1) === opponentColor
-          || canEnPassant($("#board").get(location + 1).children().eq(0))) {
+        let newLocation = $("#board > div").get(location - 7);
+        if (newLocation.firstChild && newLocation.firstChild.id.substring(0, 1) === opponentColor
+          || canEnPassant($("#board > div").get(location + 1))) {
           allowedList.push(newLocation);
         }
       }
       break;
+  }
+  console.log(allowedList);
+  for (spot of allowedList) {
+    $("#" + spot.id).addClass("acceptable");
   }
 }
