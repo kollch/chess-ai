@@ -1,6 +1,7 @@
 function availMoves(pieceId) {
   let piece = $("#" + pieceId);
   const color = pieceId.substring(0, 1);
+  const opponentColor = color === "b" ? "w" : "b";
   // Note: this will chop off the first letter of the King and Queen piece types
   const pieceType = pieceId.substring(2);
   console.log("The piece type is " + pieceType);
@@ -128,10 +129,16 @@ function availMoves(pieceId) {
       }
       break;
     case "ing":
-      /* x 1 2 3 x x
-       * 9 4 o 5 x 10
-       * x 6 7 8 x x
+      /* x 1 2 3 x
+       * 9 4 o 5 10
+       * x 6 7 8 x
        */
+      function canCastleLeft(location) {
+        return false;
+      }
+      function canCastleRight(location) {
+        return false;
+      }
       if ((location - 9) % 8 !== 7 && location - 9 >= 0) {
         pushItem(location - 9);
       }
@@ -156,14 +163,39 @@ function availMoves(pieceId) {
       if ((location + 9) % 8 !== 0 && location + 9 < 64) {
         pushItem(location + 9);
       }
-      if (canCastleLeft()) {
+      if (canCastleLeft(location)) {
         pushItem(location - 2);
       }
-      if (canCastleRight()) {
+      if (canCastleRight(location)) {
         pushItem(location + 2);
       }
       break;
     case "Pawn":
+      /* x 2 x
+       * 3 1 4
+       * x o x
+       */
+      function canEnPassant(pawn) {
+        return false;
+      }
+      pushItem(location - 8);
+      if (location > 47 && location < 56) {
+        pushItem(location - 16);
+      }
+      if (location % 8 !== 0) {
+        let newLocation = $("#board").get(location - 9);
+        if (newLocation.children().eq(0).id.substring(0, 1) === opponentColor
+          || canEnPassant($("#board").get(location - 1).children().eq(0))) {
+          allowedList.push(newLocation);
+        }
+      }
+      if (location % 8 !== 7) {
+        let newLocation = $("#board").get(location - 7);
+        if (newLocation.children().eq(0).id.substring(0, 1) === opponentColor
+          || canEnPassant($("#board").get(location + 1).children().eq(0))) {
+          allowedList.push(newLocation);
+        }
+      }
       break;
   }
 }
