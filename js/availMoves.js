@@ -74,6 +74,33 @@ function availMoves(pieceId) {
         pushItem(location + 6);
       }
       break;
+    case "ueen":
+      /* Note: since half of the queen's moves are that of the bishop, there is
+       * no break so it falls through the bishop case as well. */
+      /* 8 2 6
+       * 4 o 3
+       * 5 1 7
+       */
+      for (let i = location + 8; i < 64; i += 8) {
+        if (!pushItem(i)) {
+          break;
+        }
+      }
+      for (let i = location - 8; i >= 0; i -= 8) {
+        if (!pushItem(i)) {
+          break;
+        }
+      }
+      for (let i = location + 1; i % 8 !== 0; i++) {
+        if (!pushItem(i)) {
+          break;
+        }
+      }
+      for (let i = location - 1; i >= 0 && i % 8 !== 7; i--) {
+        if (!pushItem(i)) {
+          break;
+        }
+      }
     case "Bishop":
       /* 4 x 2
        * x o x
@@ -100,9 +127,41 @@ function availMoves(pieceId) {
         }
       }
       break;
-    case "ueen":
-      break;
     case "ing":
+      /* x 1 2 3 x x
+       * 9 4 o 5 x 10
+       * x 6 7 8 x x
+       */
+      if ((location - 9) % 8 !== 7 && location - 9 >= 0) {
+        pushItem(location - 9);
+      }
+      if (location - 8 >= 0) {
+        pushItem(location - 8);
+      }
+      if ((location - 7) % 8 !== 0 && location - 7 >= 0) {
+        pushItem(location - 7);
+      }
+      if ((location - 1) % 8 !== 7 && location - 1 >= 0) {
+        pushItem(location - 1);
+      }
+      if ((location + 1) % 8 !== 0 && location + 1 < 64) {
+        pushItem(location + 10);
+      }
+      if ((location + 7) % 8 !== 7 && location + 7 < 64) {
+        pushItem(location + 7);
+      }
+      if (location + 8 < 64) {
+        pushItem(location + 8);
+      }
+      if ((location + 9) % 8 !== 0 && location + 9 < 64) {
+        pushItem(location + 9);
+      }
+      if (canCastleLeft()) {
+        pushItem(location - 2);
+      }
+      if (canCastleRight()) {
+        pushItem(location + 2);
+      }
       break;
     case "Pawn":
       break;
