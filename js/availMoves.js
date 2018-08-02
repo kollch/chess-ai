@@ -1,12 +1,17 @@
 function availMoves(pieceId) {
   let piece = $("#" + pieceId);
   const color = pieceId.substring(0, 1);
+  if ($("#capturedOwn").hasClass("black")) {
+    if (color !== "b") {
+      return;
+    }
+  } else if (color !== "w") {
+    return;
+  }
   const opponentColor = color === "b" ? "w" : "b";
   // Note: this will chop off the first letter of the King and Queen piece types
   const pieceType = pieceId.substring(2);
-  console.log("The piece type is " + pieceType);
   let location = $("#board").children().index(piece.parent());
-  console.log("The location of the piece is " + location);
   let allowedList = [];
   function pushItem(i) {
     let newLocation = $("#board > div").get(i);
@@ -156,7 +161,7 @@ function availMoves(pieceId) {
         pushItem(location - 1);
       }
       if ((location + 1) % 8 !== 0 && location + 1 < 64) {
-        pushItem(location + 10);
+        pushItem(location + 1);
       }
       if ((location + 7) % 8 !== 7 && location + 7 < 64) {
         pushItem(location + 7);
@@ -205,7 +210,6 @@ function availMoves(pieceId) {
       }
       break;
   }
-  console.log(allowedList);
   for (spot of allowedList) {
     $("#" + spot.id).addClass("acceptable");
   }
