@@ -56,6 +56,7 @@ $(() => {
       return;
     }
     e.preventDefault();
+    availMoves(elmnt.id);
 
     document.ontouchmove = e => {
       e.preventDefault();
@@ -81,6 +82,7 @@ $(() => {
       document.ontouchmove = null;
       document.ontouchend = null;
       document.ontouchcancel = null;
+      $("#board > div").removeClass("acceptable");
     };
 
     document.ontouchcancel = () => {
@@ -90,6 +92,7 @@ $(() => {
       document.ontouchmove = null;
       document.ontouchend = null;
       document.ontouchcancel = null;
+      $("#board > div").removeClass("acceptable");
     };
   };
 });
