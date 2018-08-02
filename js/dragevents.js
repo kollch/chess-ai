@@ -26,13 +26,11 @@ $(() => {
       let cell = document.elementFromPoint(mouseX, mouseY);
       if (cell.classList.contains("acceptable")) {
         cell.appendChild(elmnt);
+        flip();
       } else if (cell.tagName === "IMG" && (cell.parentNode.classList.contains("acceptable"))) {
         cell.parentNode.appendChild(elmnt);
-        if (cell.classList.contains("black")) {
-          document.getElementById("capturedOpponent").appendChild(cell);
-        } else {
-          document.getElementById("capturedOwn").appendChild(cell);
-        }
+        document.getElementById("capturedOpponent").appendChild(cell);
+        flip();
       }
       elmnt.style.pointerEvents = "auto";
       elmnt.style.position = "unset";
@@ -74,6 +72,11 @@ $(() => {
       let cell = document.elementFromPoint(mouseX, mouseY);
       if (cell.classList.contains("acceptable")) {
         cell.appendChild(elmnt);
+        flip();
+      } else if (cell.tagName === "IMG" && (cell.parentNode.classList.contains("acceptable"))) {
+        cell.parentNode.appendChild(elmnt);
+        document.getElementById("capturedOpponent").appendChild(cell);
+        flip();
       }
       elmnt.style.pointerEvents = "auto";
       elmnt.style.position = "unset";
