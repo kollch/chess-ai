@@ -1,3 +1,5 @@
+var wKingLoc = 60;
+var bKingLoc = 59;
 var wCastleLeft = true;
 var bCastleLeft = true;
 var wCastleRight = true;
@@ -26,14 +28,16 @@ $(() => {
     if (i == 11) {
       newPiece.id = "b" + pieceIds[i + 1] + pieces[i + 1];
       newPiece.src = "images/black" + pieces[i + 1] + ".png";
+      newPiece.className = "black " + pieces[i + 1];
     } else if (i == 12) {
       newPiece.id = "b" + pieceIds[i - 1] + pieces[i - 1];
       newPiece.src = "images/black" + pieces[i - 1] + ".png";
+      newPiece.className = "black " + pieces[i - 1];
     } else {
       newPiece.id = "b" + pieceIds[i] + pieces[i];
       newPiece.src = "images/black" + pieces[i] + ".png";
+      newPiece.className = "black " + pieces[i];
     }
-    newPiece.className = "black";
     //newPiece.setAttribute('draggable', true);
     //newPiece.setAttribute('ondragstart', "drag(event)");
     /*
@@ -47,7 +51,7 @@ $(() => {
     let newPiece = document.createElement('img');
     newPiece.id = "w" + pieceIds[i] + pieces[i];
     newPiece.src = "images/white" + pieces[i] + ".png";
-    newPiece.className = "white";
+    newPiece.className = "white " + pieces[i];
     //newPiece.setAttribute('draggable', true);
     //newPiece.setAttribute('ondragstart', "drag(event)");
     /*
