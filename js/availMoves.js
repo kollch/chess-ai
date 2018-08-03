@@ -344,7 +344,18 @@ function availMoves(pieceId) {
         return true;
       }
       function canCastleRight(loc) {
-        return false;
+        if (inCheck(loc, -1, -1)
+          || (color === "b" && !bCastleRight)
+          || (color === "w" && !wCastleRight)) {
+          return false;
+        }
+        for (let i = loc + 1; i < 63; i++) {
+          if ($("#board > div").get(i).firstChild
+            || (inCheck(i, i, loc) && i < loc + 3)) {
+            return false;
+          }
+        }
+        return true;
       }
       if ((location - 9) % 8 !== 7 && location - 9 >= 0) {
         pushItem(location - 9);
