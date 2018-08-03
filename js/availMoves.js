@@ -167,7 +167,7 @@ function inCheck(kingPos, dest, src) {
       break;
     }
   }
-  for (let i = kingPos + 7; i % 8 !== 7; i += 7) {
+  for (let i = kingPos + 7; i % 8 !== 7 && i < 64; i += 7) {
     let result = checkedBySomethingAndQ(i, "Bishop");
     if (result === 1) {
       return true;
