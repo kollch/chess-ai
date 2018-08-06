@@ -43,10 +43,17 @@ function checkForSpecialMoves(capturing, elmnt, cell) {
     }
   } else if (elmnt.classList.contains("Pawn")) {
     /* Check for en passant */
+    if (src - dest === 16) {
+      if (elmnt.id.charAt(0) === "b") {
+        bEnPassant[elmnt.id.charAt(1) - 1] = true;
+      } else {
+        wEnPassant[elmnt.id.charAt(1) - 1] = true;
+      }
+    }
     if ((src - dest === 9 || src - dest === 7)
       && !$("#board > div").get(dest).firstChild) {
       console.log("Doing en passant");
-      let capturedPawn = $("#board > div").get(8 - src + dest).firstChild;
+      let capturedPawn = $("#board > div").get(dest + 8).firstChild;
       document.getElementById("capturedOpponent").appendChild(capturedPawn);
     }
     /* Check for hitting end of board */

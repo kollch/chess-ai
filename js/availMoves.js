@@ -185,9 +185,12 @@ function inCheck(kingPos, dest, src) {
   }
   return false;
 }
+
 function availMoves(pieceId) {
   let piece = $("#" + pieceId);
   const color = pieceId.charAt(0);
+
+  /* Check that piece is the right color */
   if ($("#capturedOwn").hasClass("black")) {
     if (color !== "b") {
       return;
@@ -195,11 +198,19 @@ function availMoves(pieceId) {
   } else if (color !== "w") {
     return;
   }
+
+  /* Remove possibility of en passant from pieces of current color
+   * (forces the opponent to only have one move to capture) */
+  let pawnArray = color === "b" ? bEnPassant : wEnPassant;
+  for (let i = 0; i < pawnArray.length; i++) {
+    pawnArray[i] = false;
+  }
+
   const opponentColor = color === "b" ? "w" : "b";
-  // Note: this will chop off the first letter of the King and Queen piece types
   const pieceType = pieceId.substring(2);
   let location = $("#board").children().index(piece.parent());
   let allowedList = [];
+
   function pushItem(i) {
     let newLocation = $("#board > div").get(i);
     if (newLocation.firstChild) {
@@ -212,6 +223,7 @@ function availMoves(pieceId) {
     allowedList.push(newLocation);
     return true;
   }
+
   switch (pieceType) {
     case "Rook":
       /* x 2 x
@@ -343,6 +355,7 @@ function availMoves(pieceId) {
         }
         return true;
       }
+
       function canCastleRight(loc) {
         if (inCheck(loc, -1, -1)
           || (color === "b" && !bCastleRight)
@@ -357,6 +370,7 @@ function availMoves(pieceId) {
         }
         return true;
       }
+
       if ((location - 9) % 8 !== 7 && location - 9 >= 0) {
         pushItem(location - 9);
       }
@@ -394,8 +408,13 @@ function availMoves(pieceId) {
        * x o x
        */
       function canEnPassant(pawn) {
+        let pawnArray = color === "b" ? wEnPassant : bEnPassant;
+        if (pawn && pawn.id.charAt(0) !== color && pawnArray[pawn.id.charAt(1) - 1]) {
+          return true;
+        }
         return false;
       }
+
       let newLocation = $("#board > div").get(location - 8);
       if (!newLocation.firstChild) {
         pushItem(location - 8);
@@ -406,14 +425,14 @@ function availMoves(pieceId) {
       if (location % 8 !== 0) {
         let newLocation = $("#board > div").get(location - 9);
         if (newLocation.firstChild && newLocation.firstChild.id.substring(0, 1) === opponentColor
-          || canEnPassant($("#board > div").get(location - 1))) {
+          || canEnPassant($("#board > div").get(location - 1).firstChild)) {
           allowedList.push(newLocation);
         }
       }
       if (location % 8 !== 7) {
         let newLocation = $("#board > div").get(location - 7);
         if (newLocation.firstChild && newLocation.firstChild.id.substring(0, 1) === opponentColor
-          || canEnPassant($("#board > div").get(location + 1))) {
+          || canEnPassant($("#board > div").get(location + 1).firstChild)) {
           allowedList.push(newLocation);
         }
       }
