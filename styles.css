@@ -70,6 +70,13 @@ img {
   cursor: move;
 }
 
+#pawnUpgradePrompt {
+  display: none;
+  width: calc(90vmin - 2px);
+  height: calc(90vmin - 2px);
+  border: 1px solid black;
+}
+
 /* When width smaller than height. */
 @media screen and (orientation: portrait) {
   body {

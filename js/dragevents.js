@@ -25,25 +25,25 @@ $(() => {
       function checkForSpecialMoves(capturing) {
         let dest;
         if (capturing) {
-          let dest = $("#board").children().index($("#" + cell.id).parent());
+          dest = $("#board").children().index($("#" + cell.id).parent());
         } else {
-          let dest = $("#board").children().index($("#" + cell.id));
+          dest = $("#board").children().index($("#" + cell.id));
         }
         let src = $("#board").children().index($("#" + elmnt.id).parent());
         /* Can't castle with a moved rook */
         if (elmnt.classList.contains("Rook")) {
           let rookType = elmnt.id.substring(0, 2);
           switch (rookType) {
-            case "bL":
+            case "b1":
               bCastleLeft = false;
               break;
-            case "bR":
+            case "b2":
               bCastleRight = false;
               break;
-            case "wL":
+            case "w1":
               wCastleLeft = false;
               break;
-            case "wR":
+            case "w2":
               wCastleRight = false;
               break;
             default:
@@ -67,11 +67,37 @@ $(() => {
           }
         } else if (elmnt.classList.contains("Pawn")) {
           /* Check for en passant */
-          if (src - dest === 9 || src - dest === 7) {
+          if ((src - dest === 9 || src - dest === 7)
+            && !$("#board > div").get(dest).firstChild) {
+            console.log("Doing en passant");
             let capturedPawn = $("#board > div").get(8 - src + dest).firstChild;
             document.getElementById("capturedOpponent").appendChild(capturedPawn);
           }
           /* Check for hitting end of board */
+          if (dest < 8) {
+            $("#board").hide();
+            $("#pawnUpgradePrompt").show();
+            $("#pawnUpgradePrompt > button").click(() => {
+              let result = $('input[name=pawnTo]:checked').val();
+              $("#pawnUpgradePrompt").hide();
+              $("#board").show();
+              let newPiece = document.createElement('img');
+              if (elmnt.id.charAt(0) === "b") {
+                let newNum = $(".black + ." + result).length + 1;
+                newPiece.id = "b" + newNum + result;
+                newPiece.src = "images/black" + result + ".png";
+                newPiece.className = "black " + result;
+              } else {
+                let newNum = $(".white + ." + result).length + 1;
+                newPiece.id = "w" + newNum + result;
+                newPiece.src = "images/white" + result + ".png";
+                newPiece.className = "white " + result;
+              }
+              /* Swap piece for upgrade */
+              elmnt.remove();
+              cell.appendChild(newPiece);
+            });
+          }
         }
       }
       elmnt.style.pointerEvents = "none";
