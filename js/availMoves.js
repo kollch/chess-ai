@@ -200,7 +200,7 @@ function availMoves(pieceId) {
   }
 
   /* Remove possibility of en passant from pieces of current color
-   * (forces the opponent to only have one move to capture) */
+   * (forces the opponent to only have one turn to capture) */
   let pawnArray = color === "b" ? bEnPassant : wEnPassant;
   for (let i = 0; i < pawnArray.length; i++) {
     pawnArray[i] = false;
@@ -212,12 +212,12 @@ function availMoves(pieceId) {
   let allowedList = [];
 
   function pushItem(i) {
+    /* Returns true if a piece is solid, false if moves can go through it */
     let newLocation = $("#board > div").get(i);
     if (newLocation.firstChild) {
-      if (newLocation.firstChild.id.charAt(0) === color) {
-        return false;
+      if (newLocation.firstChild.id.charAt(0) !== color) {
+        allowedList.push(newLocation);
       }
-      allowedList.push(newLocation);
       return false;
     }
     allowedList.push(newLocation);
@@ -417,10 +417,12 @@ function availMoves(pieceId) {
 
       let newLocation = $("#board > div").get(location - 8);
       if (!newLocation.firstChild) {
-        pushItem(location - 8);
-      }
-      if (location > 47 && location < 56) {
-        pushItem(location - 16);
+        if (pushItem(location - 8) && location > 47 && location < 56) {
+          let newLocation = $("#board > div").get(location - 16);
+          if (!newLocation.firstChild) {
+            pushItem(location - 16);
+          }
+        }
       }
       if (location % 8 !== 0) {
         let newLocation = $("#board > div").get(location - 9);
@@ -438,7 +440,11 @@ function availMoves(pieceId) {
       }
       break;
   }
+  /* Check that a new move doesn't put the king in check; if not, add the class */
   for (spot of allowedList) {
-    $("#" + spot.id).addClass("acceptable");
+    let kingLoc = color === "b" ? bKingLoc : wKingLoc;
+    if (!inCheck(kingLoc, $("#board").children().index(spot), location)) {
+      $("#" + spot.id).addClass("acceptable");
+    }
   }
 }
