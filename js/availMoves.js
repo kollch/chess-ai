@@ -271,7 +271,7 @@ function availMoves(pieceId) {
         pushItem(location + 6);
       }
       break;
-    case "ueen":
+    case "Queen":
       /* Note: since half of the queen's moves are that of the bishop, there is
        * no break so it falls through the bishop case as well. */
       /* 8 2 6
@@ -324,7 +324,7 @@ function availMoves(pieceId) {
         }
       }
       break;
-    case "ing":
+    case "King":
       /* x 1 2 3 x
        * 9 4 o 5 10
        * x 6 7 8 x
