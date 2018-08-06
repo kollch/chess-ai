@@ -18,7 +18,7 @@ $(() => {
   locations.push("a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2");
   locations.push("a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1");
   let pieceIds = ["1", "2", "3", "4", "5", "6", "7", "8"];
-  pieceIds.push("L", "L", "L", "", "", "R", "R", "R");
+  pieceIds.push("1", "1", "1", "1", "1", "2", "2", "2");
   let pieces = ["Pawn", "Pawn", "Pawn", "Pawn", "Pawn", "Pawn", "Pawn", "Pawn"];
   pieces.push("Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "Rook");
   let bImgs = [];
@@ -38,13 +38,6 @@ $(() => {
       newPiece.src = "images/black" + pieces[i] + ".png";
       newPiece.className = "black " + pieces[i];
     }
-    //newPiece.setAttribute('draggable', true);
-    //newPiece.setAttribute('ondragstart', "drag(event)");
-    /*
-    newPiece.on("dragstart", function(event) {
-      drag(event);
-    });
-    */
     bImgs.push(newPiece);
   }
   for (let i = 0; i < pieceIds.length; i++) {
@@ -52,11 +45,6 @@ $(() => {
     newPiece.id = "w" + pieceIds[i] + pieces[i];
     newPiece.src = "images/white" + pieces[i] + ".png";
     newPiece.className = "white " + pieces[i];
-    //newPiece.setAttribute('draggable', true);
-    //newPiece.setAttribute('ondragstart', "drag(event)");
-    /*
-    newPiece.on("dragstart", drag(event));
-    */
     wImgs.push(newPiece);
   }
   /*if (opponentColor === "white") {
@@ -69,12 +57,6 @@ $(() => {
     if ((i / 8) % 2 < 1 && i % 2 == 1 || (i / 8) % 2 >= 1 && i % 2 == 0) {
       newElement.className = "boardSquare even";
     }
-    //newElement.setAttribute('ondrop', "drop(event)");
-    //newElement.setAttribute('ondragover', "allowDrop(event)");
-    /*
-    newElement.on("drop", drop(event));
-    newElement.on("dragover", allowDrop(event));
-    */
     switch (newElement.id) {
       case "a8":
         newElement.append(bImgs[15]);
