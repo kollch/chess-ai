@@ -86,6 +86,9 @@ function checkForSpecialMoves(capturing, elmnt, cell) {
 
 $(() => {
   document.onmousedown = e => {
+    if (e.button !== 0) {
+      return;
+    }
     let mouseX, mouseY, elmnt;
     e.preventDefault();
     mouseX = e.clientX;
@@ -113,13 +116,13 @@ $(() => {
       if (cell.classList.contains("acceptable")) {
         checkForSpecialMoves(false, elmnt, cell);
         cell.appendChild(elmnt);
-        flip();
+        setTimeout(flip, 500);
       } else if (cell.tagName === "IMG"
         && (cell.parentNode.classList.contains("acceptable"))) {
         checkForSpecialMoves(true, elmnt, cell);
         cell.parentNode.appendChild(elmnt);
         document.getElementById("capturedOpponent").appendChild(cell);
-        flip();
+        setTimeout(flip, 500);
       }
       elmnt.style.pointerEvents = "auto";
       elmnt.style.position = "unset";
@@ -162,12 +165,12 @@ $(() => {
       if (cell.classList.contains("acceptable")) {
         checkForSpecialMoves(false, elmnt, cell);
         cell.appendChild(elmnt);
-        flip();
+        setTimeout(flip, 500);
       } else if (cell.tagName === "IMG" && (cell.parentNode.classList.contains("acceptable"))) {
         checkForSpecialMoves(true, elmnt, cell);
         cell.parentNode.appendChild(elmnt);
         document.getElementById("capturedOpponent").appendChild(cell);
-        flip();
+        setTimeout(flip, 500);
       }
       elmnt.style.pointerEvents = "auto";
       elmnt.style.position = "unset";
