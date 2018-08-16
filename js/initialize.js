@@ -7,8 +7,32 @@ var bCastleRight = true;
 var wEnPassant = [false, false, false, false, false, false, false, false];
 var bEnPassant = [false, false, false, false, false, false, false, false];
 
-$(() => {
-  $('#board').empty();
+/* Adds a class to a selection */
+function addClass(pieces, className) {
+  for (let i = 0; i < pieces.length; i++) {
+    pieces[i].classList.add(className);
+  }
+}
+
+/* Removes a class from a selection */
+function removeClass(pieces, className) {
+  for (let i = 0; i < pieces.length; i++) {
+    pieces[i].classList.remove(className);
+  }
+}
+
+/* Toggles a class in a selection */
+function toggleClass(pieces, className) {
+  for (let i = 0; i < pieces.length; i++) {
+    pieces[i].classList.toggle(className);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const board = document.getElementById("board");
+  for (let i = board.childNodes.length; i > 0; i--) {
+    board.childNodes[i - 1].remove();
+  }
   let locations = ["a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"];
   locations.push("a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7");
   locations.push("a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6");
@@ -155,6 +179,6 @@ $(() => {
         newElement.append(wImgs[15]);
         break;
     }
-    $('#board').append(newElement);
+    board.append(newElement);
   }
 });

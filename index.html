@@ -3,10 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <link rel="stylesheet" href="styles.css">
-<!-- jQuery must go first because every file relies on it
-     (pull in a local copy if not connected to the internet) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="./js/jquery.min.js"><\/script>');</script>
 <!-- initialize.js sets up the board, which is needed before anything else can be computed -->
 <script src="./js/initialize.js"></script>
 <!-- dragevents.js calls some functions in availMoves.js and flip.js -->
@@ -21,7 +17,7 @@
   <input type="radio" name="pawnTo" value="Rook" />Rook<br />
   <input type="radio" name="pawnTo" value="Knight" />Knight<br />
   <input type="radio" name="pawnTo" value="Bishop" />Bishop<br />
-  <button type="button">Submit</button>
+  <button type="button" id="pawnUpgradeBtn">Submit</button>
 </div>
 
 <div id="board">

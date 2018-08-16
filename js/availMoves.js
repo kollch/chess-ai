@@ -1,7 +1,10 @@
 function inCheck(kingPos, dest, src) {
+  const board = document.getElementById("board");
+  const boardCells = board.childNodes;
+  const capturedOwn = document.getElementById("capturedOwn");
   function inCheckBy(pieceType, loc) {
-    let opponentColor = $("#capturedOwn").hasClass("black") ? "white" : "black";
-    let position = $("#board > div").get(loc);
+    const opponentColor = capturedOwn.classList.contains("black") ? "white" : "black";
+    const position = boardCells[loc];
     if (position.firstChild
       && position.firstChild.classList.contains(pieceType)
       && position.firstChild.classList.contains(opponentColor)) {
@@ -80,7 +83,7 @@ function inCheck(kingPos, dest, src) {
     if (i === dest) {
       return -1;
     }
-    let position = $("#board > div").get(i);
+    const position = boardCells[i];
     if (position.firstChild) {
       if (i === src) {
         return 0;
@@ -187,11 +190,14 @@ function inCheck(kingPos, dest, src) {
 }
 
 function availMoves(pieceId) {
-  let piece = $("#" + pieceId);
+  const board = document.getElementById("board");
+  const boardCells = board.childNodes;
+  const capturedOwn = document.getElementById("capturedOwn");
+  const piece = document.getElementById(pieceId);
   const color = pieceId.charAt(0);
 
   /* Check that piece is the right color */
-  if ($("#capturedOwn").hasClass("black")) {
+  if (capturedOwn.classList.contains("black")) {
     if (color !== "b") {
       return;
     }
@@ -208,12 +214,12 @@ function availMoves(pieceId) {
 
   const opponentColor = color === "b" ? "w" : "b";
   const pieceType = pieceId.substring(2);
-  let location = $("#board").children().index(piece.parent());
+  let location = [].indexOf.call(boardCells, piece.parentElement);
   let allowedList = [];
 
   function pushItem(i) {
     /* Returns true if a piece is solid, false if moves can go through it */
-    let newLocation = $("#board > div").get(i);
+    let newLocation = boardCells[i];
     if (newLocation.firstChild) {
       if (newLocation.firstChild.id.charAt(0) !== color) {
         allowedList.push(newLocation);
@@ -348,7 +354,7 @@ function availMoves(pieceId) {
           return false;
         }
         for (let i = loc - 1; i > 56; i--) {
-          if ($("#board > div").get(i).firstChild
+          if (boardCells[i].firstChild
             || (inCheck(i, i, loc) && i > loc - 3)) {
             return false;
           }
@@ -363,7 +369,7 @@ function availMoves(pieceId) {
           return false;
         }
         for (let i = loc + 1; i < 63; i++) {
-          if ($("#board > div").get(i).firstChild
+          if (boardCells[i].firstChild
             || (inCheck(i, i, loc) && i < loc + 3)) {
             return false;
           }
@@ -415,26 +421,26 @@ function availMoves(pieceId) {
         return false;
       }
 
-      let newLocation = $("#board > div").get(location - 8);
+      let newLocation = boardCells[location - 8];
       if (!newLocation.firstChild) {
         if (pushItem(location - 8) && location > 47 && location < 56) {
-          let newLocation = $("#board > div").get(location - 16);
+          let newLocation = boardCells[location - 16];
           if (!newLocation.firstChild) {
             pushItem(location - 16);
           }
         }
       }
       if (location % 8 !== 0) {
-        let newLocation = $("#board > div").get(location - 9);
+        let newLocation = boardCells[location - 9];
         if (newLocation.firstChild && newLocation.firstChild.id.substring(0, 1) === opponentColor
-          || canEnPassant($("#board > div").get(location - 1).firstChild)) {
+          || canEnPassant(boardCells[location - 1].firstChild)) {
           allowedList.push(newLocation);
         }
       }
       if (location % 8 !== 7) {
-        let newLocation = $("#board > div").get(location - 7);
+        let newLocation = boardCells[location - 7];
         if (newLocation.firstChild && newLocation.firstChild.id.substring(0, 1) === opponentColor
-          || canEnPassant($("#board > div").get(location + 1).firstChild)) {
+          || canEnPassant(boardCells[location + 1].firstChild)) {
           allowedList.push(newLocation);
         }
       }
@@ -443,8 +449,8 @@ function availMoves(pieceId) {
   /* Check that a new move doesn't put the king in check; if not, add the class */
   for (spot of allowedList) {
     let kingLoc = color === "b" ? bKingLoc : wKingLoc;
-    if (!inCheck(kingLoc, $("#board").children().index(spot), location)) {
-      $("#" + spot.id).addClass("acceptable");
+    if (!inCheck(kingLoc, [].indexOf.call(boardCells, spot), location)) {
+      spot.classList.add("acceptable");
     }
   }
 }
