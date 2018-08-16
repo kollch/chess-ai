@@ -8,6 +8,18 @@ body {
   width: 100vw;
 }
 
+.showRot {
+  transition: all 2s ease-in-out;
+}
+
+.rotClock {
+  transform: rotate(180deg);
+}
+
+.rotCClock {
+  transform: rotate(-180deg);
+}
+
 #board {
   width: 90vmin;
 }
