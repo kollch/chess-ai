@@ -448,8 +448,14 @@ function availMoves(pieceId) {
   }
   /* Check that a new move doesn't put the king in check; if not, add the class */
   for (spot of allowedList) {
-    let kingLoc = color === "b" ? bKingLoc : wKingLoc;
-    if (!inCheck(kingLoc, [].indexOf.call(boardCells, spot), location)) {
+    let kingLoc;
+    const newLoc = [].indexOf.call(boardCells, spot);
+    if (pieceType === "King") {
+      kingLoc = newLoc;
+    } else {
+      kingLoc = color === "b" ? bKingLoc : wKingLoc;
+    }
+    if (!inCheck(kingLoc, newLoc, location)) {
       spot.classList.add("acceptable");
     }
   }
