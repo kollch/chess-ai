@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const boardCells = board.childNodes;
   const pawnUpgrade = document.getElementById("pawnUpgradePrompt");
   const pawnUpgradeBtn = document.getElementById("pawnUpgradeBtn");
-  const capturedOpponent = document.getElementById("capturedOpponent");
 
   function checkForSpecialMoves(capturing, elmnt, cell) {
     let dest;
@@ -61,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
         && !boardCells[dest].firstChild) {
         console.log("Doing en passant");
         let capturedPawn = boardCells[dest + 8].firstChild;
-        capturedOpponent.appendChild(capturedPawn);
+        document.getElementById("capturedOpponent").appendChild(capturedPawn);
       }
       /* Check for hitting end of board */
       if (dest < 8) {
@@ -128,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
         && (cell.parentNode.classList.contains("acceptable"))) {
         checkForSpecialMoves(true, elmnt, cell);
         cell.parentNode.appendChild(elmnt);
-        capturedOpponent.appendChild(cell);
+        document.getElementById("capturedOpponent").appendChild(cell);
         setTimeout(flip, 500);
       }
       elmnt.style.pointerEvents = "auto";
@@ -176,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else if (cell.tagName === "IMG" && (cell.parentNode.classList.contains("acceptable"))) {
         checkForSpecialMoves(true, elmnt, cell);
         cell.parentNode.appendChild(elmnt);
-        capturedOpponent.appendChild(cell);
+        document.getElementById("capturedOpponent").appendChild(cell);
         setTimeout(flip, 500);
       }
       elmnt.style.pointerEvents = "auto";
