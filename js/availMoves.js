@@ -2,6 +2,7 @@ function inCheck(kingPos, dest, src) {
   const board = document.getElementById("board");
   const boardCells = board.childNodes;
   const capturedOwn = document.getElementById("capturedOwn");
+  /* loc is the location of the checking piece */
   function inCheckBy(pieceType, loc) {
     const opponentColor = capturedOwn.classList.contains("black") ? "white" : "black";
     const position = boardCells[loc];
@@ -77,9 +78,8 @@ function inCheck(kingPos, dest, src) {
     }
   }
 
-  /* Check for rooks and queen */
   function checkedBySomethingAndQ(i, something) {
-    /* Returns 1 for true, 0 for false, -1 for break from loop */
+    /* Returns 1 for true, 0 for false, -1 for false and break from loop */
     if (i === dest) {
       return -1;
     }
@@ -94,6 +94,7 @@ function inCheck(kingPos, dest, src) {
     }
     return 0;
   }
+  /* Check for rooks and queen */
   for (let i = kingPos + 8; i < 64; i += 8) {
     const result = checkedBySomethingAndQ(i, "Rook");
     if (result === 1) {
@@ -141,14 +142,12 @@ function inCheck(kingPos, dest, src) {
     }
   }
   if ((kingPos + 7) % 8 !== 7 && kingPos + 7 < 64) {
-    if (inCheckBy("Pawn", kingPos + 7)
-      || inCheckBy("King", kingPos + 7)) {
+    if (inCheckBy("King", kingPos + 7)) {
       return true;
     }
   }
   if ((kingPos + 9) % 8 !== 0 && kingPos + 9 < 64) {
-    if (inCheckBy("Pawn", kingPos + 9)
-      || inCheckBy("King", kingPos + 9)) {
+    if (inCheckBy("King", kingPos + 9)) {
       return true;
     }
   }
