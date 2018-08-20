@@ -95,7 +95,7 @@ function inCheck(kingPos, dest, src) {
     return 0;
   }
   for (let i = kingPos + 8; i < 64; i += 8) {
-    let result = checkedBySomethingAndQ(i, "Rook");
+    const result = checkedBySomethingAndQ(i, "Rook");
     if (result === 1) {
       return true;
     } else if (result === -1) {
@@ -103,7 +103,7 @@ function inCheck(kingPos, dest, src) {
     }
   }
   for (let i = kingPos - 8; i >= 0; i -= 8) {
-    let result = checkedBySomethingAndQ(i, "Rook");
+    const result = checkedBySomethingAndQ(i, "Rook");
     if (result === 1) {
       return true;
     } else if (result === -1) {
@@ -111,7 +111,7 @@ function inCheck(kingPos, dest, src) {
     }
   }
   for (let i = kingPos + 1; i % 8 !== 0; i++) {
-    let result = checkedBySomethingAndQ(i, "Rook");
+    const result = checkedBySomethingAndQ(i, "Rook");
     if (result === 1) {
       return true;
     } else if (result === -1) {
@@ -119,7 +119,7 @@ function inCheck(kingPos, dest, src) {
     }
   }
   for (let i = kingPos - 1; i >= 0 && i % 8 !== 7; i--) {
-    let result = checkedBySomethingAndQ(i, "Rook");
+    const result = checkedBySomethingAndQ(i, "Rook");
     if (result === 1) {
       return true;
     } else if (result === -1) {
@@ -155,7 +155,7 @@ function inCheck(kingPos, dest, src) {
 
   /* Check for bishops and queen */
   for (let i = kingPos + 9; i % 8 !== 0 && i < 64; i += 9) {
-    let result = checkedBySomethingAndQ(i, "Bishop");
+    const result = checkedBySomethingAndQ(i, "Bishop");
     if (result === 1) {
       return true;
     } else if (result === -1) {
@@ -163,7 +163,7 @@ function inCheck(kingPos, dest, src) {
     }
   }
   for (let i = kingPos - 9; i % 8 !== 7 && i >= 0; i -= 9) {
-    let result = checkedBySomethingAndQ(i, "Bishop");
+    const result = checkedBySomethingAndQ(i, "Bishop");
     if (result === 1) {
       return true;
     } else if (result === -1) {
@@ -171,7 +171,7 @@ function inCheck(kingPos, dest, src) {
     }
   }
   for (let i = kingPos + 7; i % 8 !== 7 && i < 64; i += 7) {
-    let result = checkedBySomethingAndQ(i, "Bishop");
+    const result = checkedBySomethingAndQ(i, "Bishop");
     if (result === 1) {
       return true;
     } else if (result === -1) {
@@ -179,7 +179,7 @@ function inCheck(kingPos, dest, src) {
     }
   }
   for (let i = kingPos - 7; i % 8 !== 0 && i >= 0; i -= 7) {
-    let result = checkedBySomethingAndQ(i, "Bishop");
+    const result = checkedBySomethingAndQ(i, "Bishop");
     if (result === 1) {
       return true;
     } else if (result === -1) {
@@ -207,19 +207,19 @@ function availMoves(pieceId) {
 
   /* Remove possibility of en passant from pieces of current color
    * (forces the opponent to only have one turn to capture) */
-  let pawnArray = color === "b" ? bEnPassant : wEnPassant;
+  const pawnArray = color === "b" ? bEnPassant : wEnPassant;
   for (let i = 0; i < pawnArray.length; i++) {
     pawnArray[i] = false;
   }
 
   const opponentColor = color === "b" ? "w" : "b";
   const pieceType = pieceId.substring(2);
-  let location = [].indexOf.call(boardCells, piece.parentElement);
-  let allowedList = [];
+  const location = [].indexOf.call(boardCells, piece.parentElement);
+  const allowedList = [];
 
   function pushItem(i) {
     /* Returns true if a piece is solid, false if moves can go through it */
-    let newLocation = boardCells[i];
+    const newLocation = boardCells[i];
     if (newLocation.firstChild) {
       if (newLocation.firstChild.id.charAt(0) !== color) {
         allowedList.push(newLocation);
@@ -414,31 +414,30 @@ function availMoves(pieceId) {
        * x o x
        */
       function canEnPassant(pawn) {
-        let pawnArray = color === "b" ? wEnPassant : bEnPassant;
+        const pawnArray = color === "b" ? wEnPassant : bEnPassant;
         if (pawn && pawn.id.charAt(0) !== color && pawnArray[pawn.id.charAt(1) - 1]) {
           return true;
         }
         return false;
       }
 
-      let newLocation = boardCells[location - 8];
+      const newLocation = boardCells[location - 8];
       if (!newLocation.firstChild) {
         if (pushItem(location - 8) && location > 47 && location < 56) {
-          let newLocation = boardCells[location - 16];
-          if (!newLocation.firstChild) {
+          if (!boardCells[location - 16].firstChild) {
             pushItem(location - 16);
           }
         }
       }
       if (location % 8 !== 0) {
-        let newLocation = boardCells[location - 9];
+        const newLocation = boardCells[location - 9];
         if (newLocation.firstChild && newLocation.firstChild.id.substring(0, 1) === opponentColor
           || canEnPassant(boardCells[location - 1].firstChild)) {
           allowedList.push(newLocation);
         }
       }
       if (location % 8 !== 7) {
-        let newLocation = boardCells[location - 7];
+        const newLocation = boardCells[location - 7];
         if (newLocation.firstChild && newLocation.firstChild.id.substring(0, 1) === opponentColor
           || canEnPassant(boardCells[location + 1].firstChild)) {
           allowedList.push(newLocation);

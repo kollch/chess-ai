@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       dest = [].indexOf.call(boardCells, cell);
     }
-    let src = [].indexOf.call(boardCells, elmnt.parentElement);
+    const src = [].indexOf.call(boardCells, elmnt.parentElement);
     /* Can't castle with a moved rook */
     if (elmnt.classList.contains("Rook")) {
       const rookType = elmnt.id.substring(0, 2);
@@ -58,8 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if ((src - dest === 9 || src - dest === 7)
         && !boardCells[dest].firstChild) {
-        console.log("Doing en passant");
-        let capturedPawn = boardCells[dest + 8].firstChild;
+        const capturedPawn = boardCells[dest + 8].firstChild;
         document.getElementById("capturedOpponent").appendChild(capturedPawn);
       }
       /* Check for hitting end of board */
@@ -68,10 +67,10 @@ document.addEventListener("DOMContentLoaded", () => {
         pawnUpgrade.style.display = 'block';
         pawnUpgradeBtn.onclick = () => {
           /* Note that this is an async call */
-          let result = document.querySelectorAll("input[name=pawnTo]:checked")[0].value;
+          const result = document.querySelectorAll("input[name=pawnTo]:checked")[0].value;
           pawnUpgrade.style.display = 'none';
           board.style.display = 'block';
-          let newPiece = document.createElement('img');
+          const newPiece = document.createElement('img');
           if (elmnt.id.charAt(0) === "b") {
             const newNum = document.querySelectorAll(".black." + result).length + 1;
             newPiece.id = "b" + newNum + result;
@@ -95,11 +94,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.button !== 0) {
       return;
     }
-    let mouseX, mouseY, elmnt;
+    let mouseX, mouseY;
     e.preventDefault();
     mouseX = e.clientX;
     mouseY = e.clientY;
-    elmnt = document.elementFromPoint(mouseX, mouseY);
+    const elmnt = document.elementFromPoint(mouseX, mouseY);
     if (elmnt.tagName !== "IMG") {
       return;
     }
@@ -107,8 +106,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.onmousemove = e => {
       e.preventDefault();
-      let ePosX = mouseX - e.clientX;
-      let ePosY = mouseY - e.clientY;
+      const ePosX = mouseX - e.clientX;
+      const ePosY = mouseY - e.clientY;
       mouseX = e.clientX;
       mouseY = e.clientY;
       elmnt.style.position = "absolute";
@@ -118,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.onmouseup = () => {
       elmnt.style.pointerEvents = "none";
-      let cell = document.elementFromPoint(mouseX, mouseY);
+      const cell = document.elementFromPoint(mouseX, mouseY);
       if (cell.classList.contains("acceptable")) {
         checkForSpecialMoves(false, elmnt, cell);
         cell.appendChild(elmnt);
@@ -144,10 +143,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.touches.length > 1) {
       return;
     }
-    let mouseX, mouseY, elmnt;
+    let mouseX, mouseY;
     mouseX = e.touches[0].clientX;
     mouseY = e.touches[0].clientY;
-    elmnt = document.elementFromPoint(mouseX, mouseY);
+    const elmnt = document.elementFromPoint(mouseX, mouseY);
     if (elmnt.tagName !== "IMG") {
       return;
     }
@@ -156,8 +155,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.ontouchmove = e => {
       e.preventDefault();
-      let ePosX = mouseX - e.touches[0].clientX;
-      let ePosY = mouseY - e.touches[0].clientY;
+      const ePosX = mouseX - e.touches[0].clientX;
+      const ePosY = mouseY - e.touches[0].clientY;
       mouseX = e.touches[0].clientX;
       mouseY = e.touches[0].clientY;
       elmnt.style.position = "absolute";
@@ -167,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.ontouchend = () => {
       elmnt.style.pointerEvents = "none";
-      let cell = document.elementFromPoint(mouseX, mouseY);
+      const cell = document.elementFromPoint(mouseX, mouseY);
       if (cell.classList.contains("acceptable")) {
         checkForSpecialMoves(false, elmnt, cell);
         cell.appendChild(elmnt);

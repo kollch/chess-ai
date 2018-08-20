@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   for (let i = board.childNodes.length; i > 0; i--) {
     board.childNodes[i - 1].remove();
   }
-  let locations = ["a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"];
+  const locations = ["a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"];
   locations.push("a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7");
   locations.push("a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6");
   locations.push("a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5");
@@ -41,14 +41,14 @@ document.addEventListener("DOMContentLoaded", () => {
   locations.push("a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3");
   locations.push("a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2");
   locations.push("a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1");
-  let pieceIds = ["1", "2", "3", "4", "5", "6", "7", "8"];
+  const pieceIds = ["1", "2", "3", "4", "5", "6", "7", "8"];
   pieceIds.push("1", "1", "1", "1", "1", "2", "2", "2");
-  let pieces = ["Pawn", "Pawn", "Pawn", "Pawn", "Pawn", "Pawn", "Pawn", "Pawn"];
+  const pieces = ["Pawn", "Pawn", "Pawn", "Pawn", "Pawn", "Pawn", "Pawn", "Pawn"];
   pieces.push("Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "Rook");
-  let bImgs = [];
-  let wImgs = [];
+  const bImgs = [];
+  const wImgs = [];
   for (let i = 0; i < pieceIds.length; i++) {
-    let newPiece = document.createElement('img');
+    const newPiece = document.createElement('img');
     if (i == 11) {
       newPiece.id = "b" + pieceIds[i + 1] + pieces[i + 1];
       newPiece.src = "images/black" + pieces[i + 1] + ".png";
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
     bImgs.push(newPiece);
   }
   for (let i = 0; i < pieceIds.length; i++) {
-    let newPiece = document.createElement('img');
+    const newPiece = document.createElement('img');
     newPiece.id = "w" + pieceIds[i] + pieces[i];
     newPiece.src = "images/white" + pieces[i] + ".png";
     newPiece.className = "white " + pieces[i];
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
     locations.reverse();
   }*/
   for (let i = 0; i < locations.length; i++) {
-    let newElement = document.createElement('div');
+    const newElement = document.createElement('div');
     newElement.id = locations[i];
     newElement.className = "boardSquare";
     if ((i / 8) % 2 < 1 && i % 2 == 1 || (i / 8) % 2 >= 1 && i % 2 == 0) {
