@@ -21,41 +21,43 @@ body {
 }
 
 #board {
-  width: 90vmin;
+  --length: 90vmin;
+  width: var(--length);
 }
 
 .boardSquare {
   /* Width calculated by board width divided by 8 minus (border size times 16).
    * Height set to same as width since each cell should be a square. */
-  width: calc((90vmin - 16px) / 8);
-  height: calc((90vmin - 16px) / 8);
+  --border-width: 1px;
+  --square-length: calc((var(--length) - 16 * var(--border-width)) / 8);
+  width: var(--square-length);
+  height: var(--square-length);
   float: left;
-  border: 1px solid black;
+  border: var(--border-width) solid black;
 }
 
 #captured {
+  --length: 90vmin;
+  --square-length: calc(var(--length) / 8);
   display: flex;
   flex-direction: column;
 }
 
 #capturedOwn, #capturedOpponent {
   display: flex;
-  margin-left: 5vmin;
-  /*height: calc(45vmin - 1px);*/
-  height: 45vmin;
-  width: calc(90vmin / 2);
-  /*border: 1px solid black;*/
+  --boardside-margin: 5vmin;
+  margin-left: var(--boardside-margin);
+  height: calc(var(--length) / 2);
+  width: calc(var(--length) / 2);
   align-content: flex-start;
   flex-direction: row;
 }
 
 #capturedOwn {
-  /*border-bottom: 0;*/
   flex-wrap: wrap;
 }
 
 #capturedOpponent {
-  /*border-top: 0;*/
   flex-wrap: wrap-reverse;
 }
 
@@ -77,16 +79,18 @@ body {
 
 img {
   /* Width and height set to same as each cell (.board_square). */
-  width: calc((90vmin - 16px) / 8);
-  height: calc((90vmin - 16px) / 8);
+  width: var(--square-length);
+  height: var(--square-length);
   cursor: move;
 }
 
 #pawnUpgradePrompt {
   display: none;
-  width: calc(90vmin - 2px);
-  height: calc(90vmin - 2px);
-  border: 1px solid black;
+  --length: 90vmin;
+  --border-width: 1px;
+  width: calc(var(--length) - 2 * var(--border-width));
+  height: calc(var(--length) - 2 * var(--border-width));
+  border: var(--border-width) solid black;
 }
 
 /* When width smaller than height. */
@@ -101,21 +105,8 @@ img {
 
   #capturedOwn, #capturedOpponent {
     margin-left: 0;
-    margin-top: 5vmin;
-    /*width: calc(45vmin - 1px); */
-    width: 45vmin;
-    height: calc(90vmin / 2);
+    margin-top: var(--boardside-margin);
     flex-direction: column;
-  }
-
-  #capturedOwn {
-    /*border-bottom: 1px solid black;
-    border-right: 0;*/
-  }
-
-  #capturedOpponent {
-    /*border-top: 1px solid black;
-    border-left: 0;*/
   }
 }
 
@@ -123,27 +114,12 @@ img {
  * everything fits. */
 @media screen and (orientation: portrait) and (min-aspect-ratio: 2/3) {
   #board {
-    width: 60vh;
+    --length: 60vh;
   }
 
   #captured {
+    --length: 60vh;
     flex-direction: row;
-  }
-
-  #capturedOwn, #capturedOpponent {
-    /*width: calc(30vh - 1px);*/
-    width: 30vh;
-    height: calc(60vh / 2);
-  }
-
-  .boardSquare {
-    width: calc((60vh - 16px) / 8);
-    height: calc((60vh - 16px) / 8);
-  }
-
-  img {
-    width: calc((60vh - 16px) / 8);
-    height: calc((60vh - 16px) / 8);
   }
 }
 
@@ -151,22 +127,10 @@ img {
  * everything fits. */
 @media screen and (orientation: landscape) and (max-aspect-ratio: 3/2) {
   #board {
-    width: 60vw;
+    --length: 60vw;
   }
 
-  #capturedOwn, #capturedOpponent {
-    width: calc(60vw / 2);
-    /*height: calc(30vw - 1px);*/
-    height: 30vw;
-  }
-
-  .boardSquare {
-    width: calc((60vw - 16px) / 8);
-    height: calc((60vw - 16px) / 8);
-  }
-
-  img {
-    width: calc((60vw - 16px) / 8);
-    height: calc((60vw - 16px) / 8);
+  #captured {
+    --length: 60vw;
   }
 }
