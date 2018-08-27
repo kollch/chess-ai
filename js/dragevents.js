@@ -118,6 +118,16 @@ document.addEventListener("DOMContentLoaded", () => {
     document.onmouseup = () => {
       elmnt.style.pointerEvents = "none";
       const cell = document.elementFromPoint(mouseX, mouseY);
+      function getOpponentMove(dest, src) {
+        socket.addEventListener('open', event => {
+          console.log('Sending move to the server');
+          socket.send(dest);
+        });
+        socket.addEventListener('message', event => {
+          console.log('Receiving message from the server');
+          return event.data;
+        });
+      }
       if (cell.classList.contains("acceptable")) {
         checkForSpecialMoves(false, elmnt, cell);
         cell.appendChild(elmnt);

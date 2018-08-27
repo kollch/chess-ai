@@ -1,11 +1,12 @@
-var wKingLoc = 60;
-var bKingLoc = 59;
-var wCastleLeft = true;
-var bCastleLeft = true;
-var wCastleRight = true;
-var bCastleRight = true;
-var wEnPassant = [false, false, false, false, false, false, false, false];
-var bEnPassant = [false, false, false, false, false, false, false, false];
+let wKingLoc = 60;
+let bKingLoc = 59;
+let wCastleLeft = true;
+let bCastleLeft = true;
+let wCastleRight = true;
+let bCastleRight = true;
+let wEnPassant = [false, false, false, false, false, false, false, false];
+let bEnPassant = [false, false, false, false, false, false, false, false];
+const socket = new WebSocket('ws://localhost:8888');
 
 /* Adds a class to a selection */
 function addClass(pieces, className) {
