@@ -50,6 +50,7 @@ class Pawn(Piece):
                     continue
             elif diff[1] > 0:
                 if move[1] <= 0:
+                    continue
             else:
                 if move[1] >= 0:
                     continue
@@ -90,7 +91,7 @@ class King(Piece):
 board = [[i for i in range(8)] for j in range(8)]
 
 def main(last_move):
-    return "e7e5"
+    return "e7 e5"
 
 async def handshake(reader, writer):
     data = await reader.readuntil(b'\r\n\r\n')
@@ -188,7 +189,9 @@ async def run_connection(reader, writer):
     print("Connection established with", addr[1], "from", addr[0])
 
     while True:
+        print("Waiting for data from client")
         from_client = await get_data(reader)
+        print("Got data from client")
         if from_client == None:
             print("Closing the client socket")
             writer.close()
