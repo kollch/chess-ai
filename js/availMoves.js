@@ -1,14 +1,14 @@
-function inCheck(kingPos, dest, src) {
+function inCheck(color, kingPos, dest, src) {
   const board = document.getElementById("board");
   const boardCells = board.childNodes;
   const capturedOwn = document.getElementById("capturedOwn");
   /* loc is the location of the checking piece */
   function inCheckBy(pieceType, loc) {
-    const opponentColor = capturedOwn.classList.contains("black") ? "white" : "black";
+    //const opponentColor = capturedOwn.classList.contains("black") ? "white" : "black";
     const position = boardCells[loc];
     if (position.firstChild
       && position.firstChild.classList.contains(pieceType)
-      && position.firstChild.classList.contains(opponentColor)) {
+      && position.firstChild.classList.contains(color === "black" ? "white" : "black")) {
       return true;
     }
     return false;
@@ -188,30 +188,30 @@ function inCheck(kingPos, dest, src) {
   return false;
 }
 
-function availMoves(pieceId) {
+function availMoves(pieceId, color) {
   const board = document.getElementById("board");
   const boardCells = board.childNodes;
   const capturedOwn = document.getElementById("capturedOwn");
   const piece = document.getElementById(pieceId);
-  const color = pieceId.charAt(0);
+  const pieceColor = pieceId.charAt(0);
 
   /* Check that piece is the right color */
-  if (capturedOwn.classList.contains("black")) {
-    if (color !== "b") {
-      return;
+  if (color === "black") {
+    if (pieceColor !== "b") {
+      return [];
     }
-  } else if (color !== "w") {
-    return;
+  } else if (pieceColor !== "w") {
+    return [];
   }
 
   /* Remove possibility of en passant from pieces of current color
    * (forces the opponent to only have one turn to capture) */
-  const pawnArray = color === "b" ? bEnPassant : wEnPassant;
+  const pawnArray = pieceColor === "b" ? bEnPassant : wEnPassant;
   for (let i = 0; i < pawnArray.length; i++) {
     pawnArray[i] = false;
   }
 
-  const opponentColor = color === "b" ? "w" : "b";
+  const opponentColor = pieceColor === "b" ? "w" : "b";
   const pieceType = pieceId.substring(2);
   const location = [].indexOf.call(boardCells, piece.parentElement);
   const allowedList = [];
@@ -220,7 +220,7 @@ function availMoves(pieceId) {
     /* Returns true if a piece is solid, false if moves can go through it */
     const newLocation = boardCells[i];
     if (newLocation.firstChild) {
-      if (newLocation.firstChild.id.charAt(0) !== color) {
+      if (newLocation.firstChild.id.charAt(0) !== pieceColor) {
         allowedList.push(newLocation);
       }
       return false;
@@ -347,14 +347,14 @@ function availMoves(pieceId) {
        * x 6 7 8 x
        */
       function canCastleLeft(loc) {
-        if (inCheck(loc, -1, -1)
-          || (color === "b" && !bCastleLeft)
-          || (color === "w" && !wCastleLeft)) {
+        if (inCheck(color, loc, -1, -1)
+          || (pieceColor === "b" && !bCastleLeft)
+          || (pieceColor === "w" && !wCastleLeft)) {
           return false;
         }
         for (let i = loc - 1; i > 56; i--) {
           if (boardCells[i].firstChild
-            || (inCheck(i, i, loc) && i > loc - 3)) {
+            || (inCheck(color, i, i, loc) && i > loc - 3)) {
             return false;
           }
         }
@@ -362,14 +362,14 @@ function availMoves(pieceId) {
       }
 
       function canCastleRight(loc) {
-        if (inCheck(loc, -1, -1)
-          || (color === "b" && !bCastleRight)
-          || (color === "w" && !wCastleRight)) {
+        if (inCheck(color, loc, -1, -1)
+          || (pieceColor === "b" && !bCastleRight)
+          || (pieceColor === "w" && !wCastleRight)) {
           return false;
         }
         for (let i = loc + 1; i < 63; i++) {
           if (boardCells[i].firstChild
-            || (inCheck(i, i, loc) && i < loc + 3)) {
+            || (inCheck(color, i, i, loc) && i < loc + 3)) {
             return false;
           }
         }
@@ -413,8 +413,8 @@ function availMoves(pieceId) {
        * x o x
        */
       function canEnPassant(pawn) {
-        const pawnArray = color === "b" ? wEnPassant : bEnPassant;
-        if (pawn && pawn.id.charAt(0) !== color && pawnArray[pawn.id.charAt(1) - 1]) {
+        const pawnArray = pieceColor === "b" ? wEnPassant : bEnPassant;
+        if (pawn && pawn.id.charAt(0) !== pieceColor && pawnArray[pawn.id.charAt(1) - 1]) {
           return true;
         }
         return false;
@@ -444,6 +444,7 @@ function availMoves(pieceId) {
       }
       break;
   }
+  const results = [];
   /* Check that a new move doesn't put the king in check; if not, add the class */
   for (spot of allowedList) {
     let kingLoc;
@@ -451,10 +452,32 @@ function availMoves(pieceId) {
     if (pieceType === "King") {
       kingLoc = newLoc;
     } else {
-      kingLoc = color === "b" ? bKingLoc : wKingLoc;
+      kingLoc = pieceColor === "b" ? bKingLoc : wKingLoc;
     }
-    if (!inCheck(kingLoc, newLoc, location)) {
-      spot.classList.add("acceptable");
+    if (!inCheck(color, kingLoc, newLoc, location)) {
+      results.push(spot);
     }
   }
+  return results;
+}
+
+function isValidMove(color, src, dest) {
+  function tempFlip() {
+    document.getElementById("capturedOwn").id = "capturedOpponent";
+    document.getElementById("capturedOpponent").id = "capturedOwn";
+    const captured = document.getElementById("captured");
+    const board = document.getElementById("board");
+    captured.append(...Array.from(captured.childNodes).reverse());
+    board.append(...Array.from(board.childNodes).reverse());
+  }
+  tempFlip();
+  if (!src || !src.firstChild || !dest) {
+    tempFlip();
+    return false;
+  } else if (availMoves(src.firstChild.id, color).includes(dest)) {
+    tempFlip();
+    return true;
+  }
+  tempFlip();
+  return false;
 }
