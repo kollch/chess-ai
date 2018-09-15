@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const boardCells = board.childNodes;
   const pawnUpgrade = document.getElementById("pawnUpgradePrompt");
   const pawnUpgradeBtn = document.getElementById("pawnUpgradeBtn");
+  const color = "white";
 
   function checkForSpecialMoves(capturing, elmnt, cell) {
     let dest;
@@ -90,121 +91,150 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  document.onmousedown = e => {
-    if (e.button !== 0) {
+  function makeAIMove(nextMove) {
+    const fromElmnt = document.getElementById(nextMove[0]);
+    const toElmnt = document.getElementById(nextMove[1]);
+    if (!isValidMove(color === "white" ? "black" : "white", fromElmnt, toElmnt)) {
+      alert("Uh oh! The AI made an invalid move.");
       return;
     }
-    let mouseX, mouseY;
-    e.preventDefault();
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    const elmnt = document.elementFromPoint(mouseX, mouseY);
-    if (elmnt.tagName !== "IMG") {
-      return;
+    if (toElmnt.firstChild) {
+      const capturedPiece = toElmnt.firstChild;
+      toElmnt.appendChild(fromElmnt.firstChild);
+      document.getElementById("capturedOwn").appendChild(capturedPiece);
+    } else {
+      toElmnt.appendChild(fromElmnt.firstChild);
     }
-    availMoves(elmnt.id);
+  }
 
-    document.onmousemove = e => {
+  socket.onmessage = socketEvent => {
+    console.log('Receiving new move from server');
+    const nextMove = socketEvent.data;
+    /* Data passed into function as array [src, dest] */
+    makeAIMove(nextMove.split(" "));
+  }
+
+  /* Prevent action until data can be sent through the socket */
+  socket.onopen = socketEvent => {
+    document.onmousedown = e => {
+      if (e.button !== 0) {
+        return;
+      }
+      let mouseX, mouseY;
       e.preventDefault();
-      const ePosX = mouseX - e.clientX;
-      const ePosY = mouseY - e.clientY;
       mouseX = e.clientX;
       mouseY = e.clientY;
-      elmnt.style.position = "absolute";
-      elmnt.style.top = (elmnt.offsetTop - ePosY) + "px";
-      elmnt.style.left = (elmnt.offsetLeft - ePosX) + "px";
+      const elmnt = document.elementFromPoint(mouseX, mouseY);
+      if (elmnt.tagName !== "IMG") {
+        return;
+      }
+      const possMoves = availMoves(elmnt.id, color);
+      for (move of possMoves) {
+        move.classList.add("acceptable");
+      }
+
+      document.onmousemove = e => {
+        e.preventDefault();
+        const ePosX = mouseX - e.clientX;
+        const ePosY = mouseY - e.clientY;
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        elmnt.style.position = "absolute";
+        elmnt.style.top = (elmnt.offsetTop - ePosY) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - ePosX) + "px";
+      };
+
+      document.onmouseup = () => {
+        elmnt.style.pointerEvents = "none";
+        const cell = document.elementFromPoint(mouseX, mouseY);
+        let nextMove;
+        const src = elmnt.parentElement.id;
+        if (cell.classList.contains("acceptable")) {
+          checkForSpecialMoves(false, elmnt, cell);
+          const dest = cell.id;
+          cell.appendChild(elmnt);
+          console.log("Sending move to server");
+          socket.send(src + " " + dest);
+          //setTimeout(flip, 500);
+        } else if (cell.tagName === "IMG" && cell.parentNode.classList.contains("acceptable")) {
+          checkForSpecialMoves(true, elmnt, cell);
+          const dest = cell.parentElement.id;
+          cell.parentNode.appendChild(elmnt);
+          document.getElementById("capturedOpponent").appendChild(cell);
+          console.log("Sending move to server");
+          socket.send(src + " " + dest);
+          //setTimeout(flip, 500);
+        }
+        elmnt.style.pointerEvents = "auto";
+        elmnt.style.position = "unset";
+        elmnt.style.top = "unset";
+        elmnt.style.left = "unset";
+        document.onmousemove = null;
+        document.onmouseup = null;
+        removeClass(boardCells, "acceptable");
+      };
     };
 
-    document.onmouseup = () => {
-      elmnt.style.pointerEvents = "none";
-      const cell = document.elementFromPoint(mouseX, mouseY);
-      function getOpponentMove(dest, src) {
-        socket.addEventListener('open', event => {
-          console.log('Sending move to the server');
-          socket.send(dest);
-        });
-        socket.addEventListener('message', event => {
-          console.log('Receiving message from the server');
-          return event.data;
-        });
+    document.ontouchstart = e => {
+      if (e.touches.length > 1) {
+        return;
       }
-      if (cell.classList.contains("acceptable")) {
-        checkForSpecialMoves(false, elmnt, cell);
-        cell.appendChild(elmnt);
-        setTimeout(flip, 500);
-      } else if (cell.tagName === "IMG"
-        && (cell.parentNode.classList.contains("acceptable"))) {
-        checkForSpecialMoves(true, elmnt, cell);
-        cell.parentNode.appendChild(elmnt);
-        document.getElementById("capturedOpponent").appendChild(cell);
-        setTimeout(flip, 500);
-      }
-      elmnt.style.pointerEvents = "auto";
-      elmnt.style.position = "unset";
-      elmnt.style.top = "unset";
-      elmnt.style.left = "unset";
-      document.onmousemove = null;
-      document.onmouseup = null;
-      removeClass(boardCells, "acceptable");
-    };
-  };
-
-  document.ontouchstart = e => {
-    if (e.touches.length > 1) {
-      return;
-    }
-    let mouseX, mouseY;
-    mouseX = e.touches[0].clientX;
-    mouseY = e.touches[0].clientY;
-    const elmnt = document.elementFromPoint(mouseX, mouseY);
-    if (elmnt.tagName !== "IMG") {
-      return;
-    }
-    e.preventDefault();
-    availMoves(elmnt.id);
-
-    document.ontouchmove = e => {
-      e.preventDefault();
-      const ePosX = mouseX - e.touches[0].clientX;
-      const ePosY = mouseY - e.touches[0].clientY;
+      let mouseX, mouseY;
       mouseX = e.touches[0].clientX;
       mouseY = e.touches[0].clientY;
-      elmnt.style.position = "absolute";
-      elmnt.style.top = (elmnt.offsetTop - ePosY) + "px";
-      elmnt.style.left = (elmnt.offsetLeft - ePosX) + "px";
-    };
-
-    document.ontouchend = () => {
-      elmnt.style.pointerEvents = "none";
-      const cell = document.elementFromPoint(mouseX, mouseY);
-      if (cell.classList.contains("acceptable")) {
-        checkForSpecialMoves(false, elmnt, cell);
-        cell.appendChild(elmnt);
-        setTimeout(flip, 500);
-      } else if (cell.tagName === "IMG" && (cell.parentNode.classList.contains("acceptable"))) {
-        checkForSpecialMoves(true, elmnt, cell);
-        cell.parentNode.appendChild(elmnt);
-        document.getElementById("capturedOpponent").appendChild(cell);
-        setTimeout(flip, 500);
+      const elmnt = document.elementFromPoint(mouseX, mouseY);
+      if (elmnt.tagName !== "IMG") {
+        return;
       }
-      elmnt.style.pointerEvents = "auto";
-      elmnt.style.position = "unset";
-      elmnt.style.top = "unset";
-      elmnt.style.left = "unset";
-      document.ontouchmove = null;
-      document.ontouchend = null;
-      document.ontouchcancel = null;
-      removeClass(boardCells, "acceptable");
-    };
+      e.preventDefault();
+      const possMoves = availMoves(elmnt.id, color);
+      for (move of possMoves) {
+        move.classList.add("acceptable");
+      }
 
-    document.ontouchcancel = () => {
-      elmnt.style.position = "unset";
-      elmnt.style.top = "unset";
-      elmnt.style.left = "unset";
-      document.ontouchmove = null;
-      document.ontouchend = null;
-      document.ontouchcancel = null;
-      removeClass(boardCells, "acceptable");
+      document.ontouchmove = e => {
+        e.preventDefault();
+        const ePosX = mouseX - e.touches[0].clientX;
+        const ePosY = mouseY - e.touches[0].clientY;
+        mouseX = e.touches[0].clientX;
+        mouseY = e.touches[0].clientY;
+        elmnt.style.position = "absolute";
+        elmnt.style.top = (elmnt.offsetTop - ePosY) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - ePosX) + "px";
+      };
+
+      document.ontouchend = () => {
+        elmnt.style.pointerEvents = "none";
+        const cell = document.elementFromPoint(mouseX, mouseY);
+        if (cell.classList.contains("acceptable")) {
+          checkForSpecialMoves(false, elmnt, cell);
+          cell.appendChild(elmnt);
+          setTimeout(flip, 500);
+        } else if (cell.tagName === "IMG" && (cell.parentNode.classList.contains("acceptable"))) {
+          checkForSpecialMoves(true, elmnt, cell);
+          cell.parentNode.appendChild(elmnt);
+          document.getElementById("capturedOpponent").appendChild(cell);
+          setTimeout(flip, 500);
+        }
+        elmnt.style.pointerEvents = "auto";
+        elmnt.style.position = "unset";
+        elmnt.style.top = "unset";
+        elmnt.style.left = "unset";
+        document.ontouchmove = null;
+        document.ontouchend = null;
+        document.ontouchcancel = null;
+        removeClass(boardCells, "acceptable");
+      };
+
+      document.ontouchcancel = () => {
+        elmnt.style.position = "unset";
+        elmnt.style.top = "unset";
+        elmnt.style.left = "unset";
+        document.ontouchmove = null;
+        document.ontouchend = null;
+        document.ontouchcancel = null;
+        removeClass(boardCells, "acceptable");
+      };
     };
   };
 });
