@@ -88,6 +88,10 @@ class King(Piece):
         self.num_moves = 1
 
 board = [[i for i in range(8)] for j in range(8)]
+
+def main(last_move):
+    return "e7e5"
+
 async def handshake(reader, writer):
     data = await reader.readuntil(b'\r\n\r\n')
     message = data.decode()
@@ -183,14 +187,16 @@ async def run_connection(reader, writer):
     await handshake(reader, writer)
     print("Connection established with", addr[1], "from", addr[0])
 
-    from_client = await get_data(reader)
-    if from_client == None:
-        print("Closing the client socket")
-        writer.close()
-        return
-    print("From client:", from_client)
-    print("Sending the same data")
-    await send_data(writer, from_client)
+    while True:
+        from_client = await get_data(reader)
+        if from_client == None:
+            print("Closing the client socket")
+            writer.close()
+            return
+        print("From client:", from_client)
+        result = main(from_client)
+        print("AI move:", result)
+        await send_data(writer, result)
 
 loop = asyncio.get_event_loop()
 coro = asyncio.start_server(run_connection, '127.0.0.1', 8888, loop=loop)
