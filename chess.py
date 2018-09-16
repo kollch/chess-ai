@@ -91,7 +91,8 @@ class King(Piece):
 board = [[i for i in range(8)] for j in range(8)]
 
 def main(last_move):
-    return "e7 e5"
+    #return "e7 e5"
+    return "checkmate white"
 
 async def handshake(reader, writer):
     data = await reader.readuntil(b'\r\n\r\n')
@@ -143,7 +144,7 @@ async def get_data(reader):
         print("Error: don't know the opcode '" + str(intlist[1]) + "'.")
         raise ValueError
     elif intlist[1] == 8:
-        print("Client asking to close the connection.")
+        print("Client asking to close connection")
         return None
     if intlist[2] >= 8:
         masked = True
@@ -191,11 +192,11 @@ async def run_connection(reader, writer):
     while True:
         print("Waiting for data from client")
         from_client = await get_data(reader)
-        print("Got data from client")
         if from_client == None:
             print("Closing the client socket")
             writer.close()
             return
+        print("Got data from client")
         print("From client:", from_client)
         result = main(from_client)
         print("AI move:", result)

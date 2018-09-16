@@ -108,14 +108,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   socket.onmessage = socketEvent => {
-    console.log('Receiving new move from server');
-    const nextMove = socketEvent.data;
-    /* Data passed into function as array [src, dest] */
-    makeAIMove(nextMove.split(" "));
+    /* Variable stored as array [src, dest] */
+    const nextMove = socketEvent.data.split(" ");
+    if (nextMove[0] === "checkmate") {
+      socket.close();
+      if (nextMove[1] === color) {
+        alert("Checkmate; you won!");
+      } else {
+        alert("Checkmate; you lost.");
+      }
+      return;
+    }
+    console.log('Received new move from server');
+    makeAIMove(nextMove);
   }
 
   /* Prevent action until data can be sent through the socket */
   socket.onopen = socketEvent => {
+    console.log("Connected to server.");
     document.onmousedown = e => {
       if (e.button !== 0) {
         return;
