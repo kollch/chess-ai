@@ -1,92 +1,180 @@
+#!/bin/python3
+
+# Needed for websockets
 import asyncio
 import re
 import logging
 from hashlib import sha1
 from base64 import b64encode
 
-# Gets hand-typed input of the opponent's move, then prints out its own move
+# Gets input of the opponent's move, then returns its own move
 
 class MoveError(Exception):
     """Illegal move attempted."""
     pass
 
+class Player:
+    def __init__(self, color):
+        self.color = color
+        self.is_turn = False
+
+    def in_check(self, board):
+        return False
+
 class Board:
-   pass
-
-class Piece:
-    def __init__(self, board, x, y):
-        self.moveto(board, x, y)
-
-    def loc():
-        return (x, y)
-
-    def moveto(board, x, y):
-        if board.empty_loc(x, y):
-            self.x = x
-            self.y = y
-        else:
-            raise MoveError
-
-class Pawn(Piece):
     def __init__(self):
-        # Tuples of options for a single move, then the number of moves possible
-        self.move = [(0, 1)]
-        self.num_moves = 1
+        self.players = {"white": Player("white"), "black": Player("black")}
+        self.squares = [[None for i in range(8)] for j in range(8)]
+        self.players["white"].pieces = self.add_pieces("white")
+        self.players["black"].pieces = self.add_pieces("black")
 
-    def canmoveto(board, x, y):
-        diff = (x - self.x, y - self.y)
-        for i, move in enumerate(self.move):
-            if diff[0] == 0:
-                if move[0] != 0:
-                    continue
-            elif diff[0] > 0:
-                if move[0] <= 0:
-                    continue
-            else:
-                if move[0] >= 0:
-                    continue
-            if diff[1] == 0:
-                if move[1] != 0:
-                    continue
-            elif diff[1] > 0:
-                if move[1] <= 0:
-                    continue
-            else:
-                if move[1] >= 0:
-                    continue
-            wanted_move = i
-            break
+    def __getitem__(self, key):
+        return self.squares[key]
+
+    def __setitem__(self, key, value):
+        self.squares[key] = value
+
+    def add_pieces(self, color):
+        pieces = []
+        if color == "white":
+            y_loc = 7
         else:
+            y_loc = 0
+        pieces.append(King(self, 4, y_loc, color))
+        pieces.append(Queen(self, 3, y_loc, color))
+        pieces.append(Rook(self, 0, y_loc, color))
+        pieces.append(Rook(self, 7, y_loc, color))
+        pieces.append(Bishop(self, 2, y_loc, color))
+        pieces.append(Bishop(self, 5, y_loc, color))
+        pieces.append(Knight(self, 1, y_loc, color))
+        pieces.append(Knight(self, 6, y_loc, color))
+        for i in range(8):
+            pieces.append(Pawn(self, i, y_loc, color))
+        return pieces
+
+    def is_loc(self, x, y):
+        if not 0 <= x < 8 or not 0 <= y < 8:
             return False
-        for i in range(self.num_moves):
-            if not board.empty_loc(self.x + self.move[wanted_move][0], self.y + self.move[wanted_move][1]):
-                return False
         return True
 
+    def capturable(self, x, y, color):
+        if self[x][y] is not None and self[x][y].color != color:
+            return True
+        return False
+
+class Piece:
+    def __init__(self, board, x, y, color):
+        self.color = color
+        self.moveto(board, x, y)
+
+    def loc(self):
+        return (self.x, self.y)
+
+    def moveto(self, board, x, y):
+        if not board.is_loc(x, y):
+            raise MoveError
+        board[self.x][self.y] = None
+        self.x = x
+        self.y = y
+        board[x][y] = self
+
+    def canmoveto(self, board, x, y):
+        raise NotImplementedError
+
+    def _in_check_w_move(self, board, dest):
+        in_check = False
+        orig_loc = self.loc()
+        other_piece = board[dest[0]][dest[1]]
+        self.x = dest[0]
+        self.y = dest[1]
+        board[self.x][self.y] = self
+        board[orig_loc[0]][orig_loc[1]] = None
+
+        if board.players[self.color].in_check(board):
+            in_check = True
+
+        self.x = orig_loc[0]
+        self.y = orig_loc[1]
+        board[self.x][self.y] = self
+        board[dest[0]][dest[1]] = other_piece
+        return in_check
+
+    def avail_moves(self, board):
+        moves = []
+        for pattern in self.move:
+            x = self.x
+            y = self.y
+            for i in range(self.multiplier):
+                if not self.canmoveto(board, pattern[0] + x, pattern[1] + y):
+                    break
+                moves.append((pattern[0] + x, pattern[1] + y))
+                x += pattern[0]
+                y += pattern[1]
+        return moves
+
+class Pawn(Piece):
+    def __init__(self, board, x, y, color):
+        """Tuples of options for an atomic section of a move, then the
+           number of atomic sections possible per move
+        """
+        super().__init__(board, x, y, color)
+        self.patterns = [(0, 1), (-1, 1), (1, 1)]
+        self.multiplier = 2
+        # Able to en passant against
+        self.praticable = 0
+
+    def canmoveto(self, board, x, y):
+        if not board.is_loc(x, y):
+            return False
+        # If trying to move forward
+        if x - self.x == 0:
+            # If spot is empty
+            if (board[x][y] is None
+                    and not self._in_check_w_move(board, self.loc(), (x, y))):
+                return True
+        elif (board.capturable(x, y, color)
+                or board.capturable(x, y - 1, color)
+                and board[x][y - 1].praticable
+                and not self._in_check_w_move(board, self.loc(), (x, y))):
+            return True
+        return False
+
+    def moveto(self, board, x, y):
+        super().moveto(board, x, y)
+        if y == 0:
+            board[x][y] = Queen(board, x, y, self.color)
+            index = board.players[self.color].pieces.index(self)
+            board.players[self.color].pieces[index] = board[x][y]
+
 class Rook(Piece):
-    def __init__(self):
-        self.move = [(0, 1), (1, 0), (0, -1), (-1, 0)]
-        self.num_moves = 8
+    def __init__(self, board, x, y, color):
+        super().__init__(board, x, y, color)
+        self.patterns = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+        self.multiplier = 8
 
 class Knight(Piece):
-    def __init__(self):
-        self.move = [(-1, 2), (1, 2), (2, 1), (2, -1), (1, -2), (-1, -2), (-2, -1), (-2, 1)]
-        self.num_moves = 1
+    def __init__(self, board, x, y, color):
+        super().__init__(board, x, y, color)
+        self.patterns = [(-1, 2), (1, 2), (2, 1), (2, -1), (1, -2), (-1, -2), (-2, -1), (-2, 1)]
+        self.multiplier = 1
 
 class Bishop(Piece):
-    def __init__(self):
-        self.move = [(1, 1), (1, -1), (-1, -1), (-1, 1)]
-        self.num_moves = 8
+    def __init__(self, board, x, y, color):
+        super().__init__(board, x, y, color)
+        self.patterns = [(1, 1), (1, -1), (-1, -1), (-1, 1)]
+        self.multiplier = 8
 
 class Queen(Piece):
-    def __init__(self):
-        self.move = [(0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1)]
-        self.num_moves = 8
+    def __init__(self, board, x, y, color):
+        super().__init__(board, x, y, color)
+        self.patterns = [(0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1)]
+        self.multiplier = 8
 
 class King(Piece):
-    def __init__(self):
-        self.move = [(0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1)]
-        self.num_moves = 1
+    def __init__(self, board, x, y, color):
+        super().__init__(board, x, y, color)
+        self.patterns = [(0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1)]
+        self.multiplier = 1
 
 board = [[i for i in range(8)] for j in range(8)]
 
