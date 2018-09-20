@@ -121,7 +121,7 @@ class Pawn(Piece):
         self.patterns = [(0, 1), (-1, 1), (1, 1)]
         self.multiplier = 2
         # Able to en passant against
-        self.praticable = 0
+        self.praticable = False
 
     def canmoveto(self, board, x, y):
         if not board.is_loc(x, y):
@@ -132,8 +132,10 @@ class Pawn(Piece):
             if (board[x][y] is None
                     and not self._in_check_w_move(board, self.loc(), (x, y))):
                 return True
-        elif (board.capturable(x, y, color)
-                or board.capturable(x, y - 1, color)
+            # TODO: Figure out (x, y) mappings so that coordinate-based
+            # stuff is laid out correctly
+        elif (board.capturable(x, y, self.color)
+                or board.capturable(x, y - 1, self.color)
                 and board[x][y - 1].praticable
                 and not self._in_check_w_move(board, self.loc(), (x, y))):
             return True
@@ -141,6 +143,11 @@ class Pawn(Piece):
 
     def moveto(self, board, x, y):
         super().moveto(board, x, y)
+        if self.multiplier == 2:
+            self.praticable = True
+            self.multiplier = 1
+        else:
+            self.praticable = False
         if y == 0:
             board[x][y] = Queen(board, x, y, self.color)
             index = board.players[self.color].pieces.index(self)
@@ -151,6 +158,20 @@ class Rook(Piece):
         super().__init__(board, x, y, color)
         self.patterns = [(0, 1), (1, 0), (0, -1), (-1, 0)]
         self.multiplier = 8
+        self.castleable = True
+
+    def canmoveto(self, board, x, y):
+        if not board.is_loc(x, y):
+            return False
+        if ((board[x][y] is None
+                or board.capturable(x, y, self.color))
+                and not self._in_check_w_move(board, self.loc(), (x, y))):
+            return True
+        return False
+
+    def moveto(self, board, x, y):
+        super().moveto(board, x, y)
+        self.castleable = False
 
 class Knight(Piece):
     def __init__(self, board, x, y, color):
